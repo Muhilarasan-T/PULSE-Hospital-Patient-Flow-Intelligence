@@ -1,0 +1,43 @@
+# ==============================================================================
+# PULSE — Git Ignore Configuration
+# ==============================================================================
+
+# Microsoft Excel temporary files and lock files
+~$*.xlsx
+~$*.xls
+~$*.xlsm
+~$*.xlsb
+~$*.xltx
+~$*.xltm
+*.tmp
+*.bak
+
+# Data exclusion (protect raw/processed data pending license & sharing verification)
+/data/raw/*
+!/data/raw/.gitkeep
+
+/data/processed/*
+!/data/processed/.gitkeep
+
+# Catch-all for standalone large data extracts
+*.csv
+*.tsv
+*.parquet
+*.sqlite
+*.db
+
+# Operating System artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Editor / IDE configuration
+.vscode/
+.idea/
+*.swp
+*~
