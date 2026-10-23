@@ -1,119 +1,140 @@
-# PULSE — Hospital Patient Flow & Wait-Time Intelligence
+# Hospital Patient Flow & Wait-Time Intelligence (PULSE)
+### Outpatient Operations & Clinical Throughput Analytics | SQL & Microsoft Excel 365
 
-**Healthcare Operations & Outpatient Throughput Analytics**  
-*A Data Analyst Portfolio Project built with SQL & Microsoft Excel 365*
-
----
-
-## 🏥 Project Overview
-
-In healthcare delivery, hospital Outpatient Departments (OPDs) frequently face severe operational friction: extended patient wait times, unpredictable arrival surges, departmental bottlenecks, and suboptimal clinical room utilization. These delays degrade patient satisfaction, increase staff fatigue, and hinder hospital throughput.
-
-**PULSE** (*Patient Utility, Latency & Service Efficiency*) is an analytics initiative designed to evaluate patient journey milestones, isolate operational bottlenecks, and provide hospital management with data-backed recommendations to optimize outpatient flow and reduce non-value-added waiting times.
+An end-to-end healthcare analytics case study analyzing **49,912 outpatient visits** across 24 months to uncover queue bottlenecks, model arrival surges, and optimize physician and diagnostic scheduling.
 
 ---
 
-## 🎯 Project Objectives
+## Executive Summary
 
-- **Quantify Patient Wait Times:** Measure elapsed times across critical outpatient touchpoints (e.g., arrival, registration, triage, physician consultation, pharmacy/billing).
-- **Identify Bottlenecks & Peak Congestion:** Pinpoint peak arrival windows, days of highest load, and stages where queues accumulate.
-- **Evaluate Departmental Throughput:** Compare patient volume, average consultation duration, and queue velocity across medical specialties.
-- **Formulate Actionable Hospital Recommendations:** Provide operational strategies (scheduling adjustments, queue management, staffing allocation) to enhance clinical flow.
-- **Demonstrate Core Analyst Competencies:** Showcase robust data modeling, advanced SQL querying, and executive-level Microsoft Excel 365 dashboard architecture without relying on external BI platforms or code wrappers.
+Hospital outpatient departments frequently suffer from unpredictable patient arrival surges, extended waiting queues, and diagnostic delays. This project analyzes 2 years of electronic health records (EHR) from an active hospital outpatient department to diagnose the root causes of queue latency and propose evidence-based operational interventions.
 
----
-
-## 🛠️ Tooling & Stack
-
-| Tool | Role & Scope in PULSE |
-| :--- | :--- |
-| **SQL** | Relational data structuring, data quality auditing, Common Table Expressions (CTEs), window functions, time-difference calculations, and KPI aggregations. |
-| **Microsoft Excel 365** | Power Query ETL, dimensional data modeling, dynamic formulas, Pivot Tables/Pivot Charts, interactive slicers, and executive dashboard design. |
-
-> **Note on Tooling Boundaries:** In strict adherence to project scope, **Python and Power BI are intentionally excluded** from project deliverables. The focus is to demonstrate deep mastery of SQL for data extraction and transformation alongside Microsoft Excel 365 for business modeling and executive reporting.
+### Key Results & Proposed Impact
+- **Current State:** The hospital manages ~70 visits per operating day with a **27.0-minute median wait**, but **22.4% of patients (11,157 visits) suffer severe delays exceeding 1 hour** ($P_{90} = 98.0$ minutes).
+- **Core Diagnosis:** Delays are not caused by clinical doctor shortages, but by **static staffing mismatched against predictable surge windows** (63.9% of all patients arrive in two 3-hour daily windows).
+- **Projected Impact:** Implementing staggered 3-tier shifts, pre-dawn digital tokens, and a dedicated maternal ultrasound scanning wing compresses median wait times by **33.3% (down to $\le 18$ minutes)** and unlocks **+14.3% throughput capacity** with zero additional doctor headcount.
 
 ---
 
-## 🔄 Planned Project Workflow
+## Executive Dashboard Overview
+
+The analytical deliverable is an interactive, multi-tab executive dashboard built natively in **Microsoft Excel 365** utilizing an internal **Power Pivot Data Model** and **Power Query ETL pipelines**:
+
+| Dashboard Tab | Focus Area | Core Visualizations & Analytics |
+| :--- | :--- | :--- |
+| **1. Executive Summary** | High-level operations overview | KPI metric scorecards, 24-month monthly volume trajectory, wait-time tolerance tiers, and interactive tolerance slicers. |
+| **2. Wait-Time Dynamics** | Queue skewness & latency risk | 24-hour median vs. $P_{90}$ tail-risk charts, day-of-week wait profiles, and SLA compliance tiers (15m, 30m, 60m). |
+| **3. Surges & Capacity** | Arrival surges & patient cohorts | 24-hour patient arrival distribution, peak surge congestion classification, and 1-visit vs. multi-visit patient recurrence breakdown. |
+| **4. Doctor Workload** | Physician throughput & consultation pacing | Top 20 provider volume rankings, provider concentration tiers (top 21 doctors handling 71.7% of volume), and consultation duration benchmarks. |
+| **5. Diagnostic Turnaround** | Laboratory & imaging velocity | Top 10 lab tests by order volume and median turnaround time (TAT), ultrasound modality concentration, and EHR journey boundary audit. |
+| **6. Data Model Audit** | Data governance & reconciliation | Star schema entity grains, primary/foreign key mappings, automated mathematical reconciliation checks, and quality exclusion accounting. |
+
+*File path:* [`excel/PULSE_Executive_Dashboard.xlsx`](excel/PULSE_Executive_Dashboard.xlsx)
+
+---
+
+## Key Operational Findings
+
+### 1. The Twin-Peak Arrival Dilemma
+Patient arrivals do not follow a flat schedule throughout the day. Instead, outpatient traffic concentrates sharply into two distinct daily waves:
+- **Morning Surge (05:00 – 08:00 AM):** Accounts for **33.2% of total volume** (16,568 visits), peaking at 06:00 AM (6,208 visits).
+- **Afternoon Surge (12:00 – 15:00 PM):** Accounts for **30.7% of total volume** (15,323 visits), peaking at 13:00 PM (5,872 visits).
+- **The Finding:** Together, these two 3-hour windows absorb **63.9% of all hospital visits**. Because registration counters and clinics historically operate on uniform 08:00–16:00 schedules, massive holding queues accumulate before clinics even reach full staffing.
+
+### 2. The 03:00–05:00 AM "Pre-Dawn Holding Queue"
+- **3,179 patients** arrive at registration between 03:00 AM and 05:00 AM hours before physicians arrive on site.
+- These patients experience the worst queue latency of any group: a **median wait of 53.0 minutes** and a 90th percentile wait of **123.0 minutes** simply to secure a queue token.
+
+### 3. The "Monday Surge" Bottleneck
+Outpatient demand varies by over $4.5\times$ across the operating week:
+- **Monday:** The heaviest operating day with **10,036 visits (20.1% of weekly volume)**. Median wait reaches **33.0 minutes**, with **27.4% of patients waiting over 1 hour**.
+- **Sunday:** Lowest operating day with only **2,208 visits (4.4% of volume)** and a median wait of **12.0 minutes**.
+- **The Finding:** Operating staff were scheduled evenly across Monday to Sunday, creating severe under-staffing on Mondays and heavy idle capacity on Sundays.
+
+### 4. Extreme Physician Workload Skew
+- Out of 98 attending physicians, just **21 high-volume doctors handle 71.7% (35,733 visits)** of all consultations.
+- The top 2 doctors alone (`Dr. Junaid Ul Hassan Khalid` and `Dr. Abrar Ahmed Bhatti`) handle ~15% of the hospital's entire patient census.
+- **Documentation Workflow Insight:** 65.6% of visits have identical consult start and end timestamps (0.0 minutes duration), revealing that doctors conduct physical exams first and sign electronic prescriptions in batch at the end of clinic sessions.
+
+### 5. Diagnostic Service Friction (Ultrasound & Lab TAT)
+- **Ultrasound Bottleneck:** Obstetric and gynecological scans represent **66.4% of all hospital imaging requisitions** (Fetal Well Being: 41.6%, Pelvic Ultrasound: 24.8%). Patients requiring imaging wait an average of 42 minutes before seeing a doctor.
+- **Laboratory Velocity:** Complete Blood Count (CBC) is the hospital's highest-volume test (5,216 orders) with a median turnaround time of **73.0 minutes** ($P_{90} = 152.0$ minutes).
+
+---
+
+## Actionable Recommendations & Implementation Roadmap
+
+Based on the quantitative analysis, an executive strategy memo ([`docs/BUSINESS_RECOMMENDATIONS.md`](docs/BUSINESS_RECOMMENDATIONS.md)) was prepared outlining four operational transformation pillars:
+
+```mermaid
+graph TD
+    A["Operational Root Causes"] --> B["4 Strategic Interventions"]
+    
+    A --> A1["Twin-Peak Surges (64% in 6 hrs)"]
+    A --> A2["Monday Surge (20% volume vs Sunday 4%)"]
+    A --> A3["Pre-Dawn Queue (3.2k patients at 3-5 AM)"]
+    A --> A4["Ultrasound Overload (66% Maternal Scans)"]
+    
+    B --> B1["1. Staggered 3-Tier Shifts (05:30, 08:30, 11:30 AM)<br/>Level Monday staff to 125%, Sunday to 60%"]
+    B --> B2["2. Digital SMS/WhatsApp Tokens<br/>30-min staggered arrival windows eliminate 3 AM line"]
+    B --> B3["3. Provider Clinic Staggering<br/>Top 21 doctors start in tiered shifts with scribe support"]
+    B --> B4["4. Dedicated Maternal Scanning Suite<br/>Decouple FWB/Pelvic scans from general radiology queue"]
+```
+
+### Projected Outcomes:
+1. **Median Wait Time:** Reduced from **27.0 min to $\le 18.0$ min** (-33.3%).
+2. **Severe Delays (>1 Hour):** Reduced from **22.4% to $< 10.0\%$** (-55.3%).
+3. **Pre-Dawn 3 AM Queue:** Cut by **>90%** via remote appointment slotting.
+4. **Capacity Gain:** Unlocks **+14.3% additional patient capacity** (~7,000 visits over 2 years) without hiring additional doctors.
+
+---
+
+## Technical Stack & Architecture
+
+This project was built strictly using **relational SQL** for data engineering and analytics, and **Microsoft Excel 365** for dimensional modeling and executive presentation:
 
 ```
-[Phase 1] Project Initialization & Architecture (Current)
-   │
-   ▼
-[Phase 2] Dataset Acquisition & Verification (Mendeley Data: HospitalOPD)
-   │
-   ▼
-[Phase 3] Exploratory Data Profiling & Schema Mapping
-   │
-   ▼
-[Phase 4] Data Quality Auditing & Data Cleaning (SQL)
-   │
-   ▼
-[Phase 5] SQL Analysis & Operational KPI Modeling
-   │
-   ▼
-[Phase 6] Excel Data Preparation & Power Query Integration
-   │
-   ▼
-[Phase 7] Interactive Executive Excel Dashboard (Excel 365)
-   │
-   ▼
-[Phase 8] Business Insights & Operational Recommendations
-   │
-   ▼
-[Phase 9] Cross-Tool Validation & Numerical Audit
-   │
-   ▼
-[Phase 10] Final Portfolio Documentation & GitHub Packaging
+PULSE Analytics Stack
+├── SQLite 3.51 (Relational Data Engine)
+│   ├── Staging & Source Ingestion
+│   ├── Non-Destructive Data Quality Cleaning (Lineage Preservation)
+│   ├── Analytical Aggregations (Window Functions, CTEs, Date Math)
+│   └── Automated 9-Test KPI Invariant Quality Suite (100% Pass)
+└── Microsoft Excel 365 (Enterprise Analytics Layer)
+    ├── Power Query (M-Code ETL Ingestion)
+    ├── Power Pivot Data Model (Star Schema / Relationship Model)
+    ├── 14 Structured Excel Tables (ListObjects)
+    ├── Dynamic Excel Formulas (=SUM, =AVERAGE, Dynamic Ratios)
+    └── Native Interactive Slicers & Dynamic Charts
 ```
 
----
-
-## 📊 Completed Analyses & Operational Findings *(Phase 5 Verified)*
-
-> *All metrics below reflect empirically measured values calculated in SQLite 3.51 with 100% mathematical integrity across 9 automated reconciliation audit tests.*
-
-1. **Patient Wait-Time & Queue Latency:**
-   - **Median Initial Wait Time ($P_{50}$):** **27.0 Minutes** ($P_{25} = 12.0$ min, $P_{75} = 56.0$ min, $P_{90} = 98.0$ min).
-   - **Mean Wait Time:** **119.30 Minutes** (pulled up by extreme right-tail EHR delay outliers up to 695,643 min).
-   - **Exploratory SLA Compliance:** $\le 15$ min: 33.33% | $\le 30$ min: 54.41% | $\le 60$ min: 77.64% | $> 60$ min (severe delay): 22.36%.
-2. **Surge Windows & Temporal Demand:**
-   - **Twin-Peak Daily Arrival Surges:** Morning Peak (05:00–08:00 AM; 33.20% volume; Hour 6 peak = 6,208 visits) and Afternoon Peak (12:00–15:00 PM; 30.70% volume; Hour 13 peak = 5,872 visits). Together, these 6 hours absorb **63.90% of all hospital visits**.
-   - **Day-of-Week Variation:** Monday is the heaviest day (**10,036 visits, 20.11%**; Median Wait = 33.0 min); Sunday has lowest load (**2,208 visits, 4.43%**; Median Wait = 12.0 min).
-3. **Physician Workload Concentration:**
-   - Out of 98 attending doctors, **21 high-volume doctors handle 71.68% of all consultations**.
-   - Top 2 physicians (`Dr. Junaid Ul Hassan Khalid` [3,672 visits] and `Dr. Abrar Ahmed Bhatti` [3,604 visits]) handle ~15% of all hospital visits.
-4. **Clinical Pathways & Multi-Grain Risk:**
-   - 79.46% of visits are consultation-only; 12.76% use laboratory testing; 10.66% use imaging; 0.22% use pharmacy.
-   - Event-to-visit multiplication reaches up to 28x in complex workups, proving that raw row counts overestimate patient visits by 25.06%.
-5. **Diagnostic Velocity (TAT):**
-   - **Laboratory TAT:** Median = **125.0 Minutes (~2.1h)** across 13,327 valid standard complete orders ($P_{90} = 469.0$ min; 4,702 truncated records excluded).
-   - **Imaging Duration:** Median = **3.0 Minutes** across 5,513 valid procedures ($P_{90} = 9.0$ min; FWB & pelvis ultrasounds account for 66.4% of imaging).
+### Data Model Architecture
+The dimensional model implements a star schema structure linking clinical events and appointment visits to conformed dimensions:
+- **`fct_appointment_visits`** (Fact: 49,912 rows | 1 row per appointment)
+- **`fct_clinical_events`** (Fact: 62,422 rows | 1 row per clinical service/test)
+- **`dim_doctors`** (Dimension: 98 rows | 1 row per attending physician)
+- **`dim_date_calendar`** (Dimension: 1,096 rows | Conformed daily calendar 2024–2026)
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 PULSE/
-├── .gitignore               # Excludes temp files, lock files, and raw data
-├── README.md                # Project charter, workflow, and portfolio summary
-├── data/
-│   ├── raw/                 # Raw source dataset (CC BY 4.0; untracked in Git)
-│   └── processed/           # Cleaned SQLite db, dimension tables, and fact tables
-│       └── analysis/        # 24 exported analytical CSV tables ready for Excel
+├── README.md                      # Executive summary and portfolio overview
+├── .gitignore                     # Git ignore rules for data and temp files
 ├── docs/
-│   ├── PROJECT_PLAN.md      # Detailed 10-phase milestone roadmap
-│   ├── DATA_DICTIONARY.md   # Complete schema definition across all models
-│   ├── DECISION_LOG.md      # Architectural Decision Records (ADR-001 to ADR-011)
-│   ├── PROFILING_REPORT.md  # Exploratory data profiling & anomaly catalog
-│   ├── CLEANING_RULES.md    # Non-destructive transformation rules & lineage
-│   ├── KPI_DEFINITIONS.md   # Standardized KPI governance & formulas
-│   ├── SQL_ANALYSIS_REPORT.md # Executive healthcare operations intelligence report
-│   ├── BUSINESS_RECOMMENDATIONS.md # Strategic operations transformation memo
-│   ├── EXCEL_POWER_QUERY_GUIDE.md # Power Query M-code ETL guide
-│   └── EXCEL_DASHBOARD_SPEC.md    # Excel dashboard wireframes & DAX specification
-├── sql/                     # Modular SQL scripts (staging, cleaning, KPI views)
+│   ├── BUSINESS_RECOMMENDATIONS.md # Strategic operations transformation memo (CMO/COO)
+│   ├── SQL_ANALYSIS_REPORT.md     # In-depth clinical operations intelligence report
+│   ├── KPI_DEFINITIONS.md         # Standardized KPI governance & formulas catalog
+│   ├── DATA_DICTIONARY.md         # Full schema documentation across all models
+│   ├── CLEANING_RULES.md          # Non-destructive data quality & transformation rules
+│   ├── PROFILING_REPORT.md        # Exploratory data profiling & anomaly catalog
+│   ├── PROJECT_PLAN.md            # 10-phase milestone roadmap and status log
+│   ├── DECISION_LOG.md            # Architectural Decision Records (ADR-001 to ADR-011)
+│   ├── EXCEL_DASHBOARD_SPEC.md    # Dashboard wireframe layout & DAX specifications
+│   └── EXCEL_POWER_QUERY_GUIDE.md # Power Query M-code ETL guide
+├── sql/
 │   ├── 01_source_ingestion_and_staging.sql
 │   ├── 02_clean_clinical_events.sql
 │   ├── 03_aggregate_appointment_visits.sql
@@ -127,39 +148,21 @@ PULSE/
 │   ├── 11_create_dim_date_calendar.sql
 │   ├── run_all_transformations.sql
 │   └── run_all_analyses.sql
-└── excel/                   # Excel 365 workbooks and interactive dashboards
-    └── PULSE_Executive_Dashboard.xlsx # Master interactive executive dashboard (Power Pivot)
+└── excel/
+    └── PULSE_Executive_Dashboard.xlsx # Interactive executive dashboard (Excel 365)
 ```
 
 ---
 
-## 📌 Project Status
+## How to Explore This Project
 
-| Phase | Milestone | Status |
-| :--- | :--- | :--- |
-| **Phase 1** | **Project Initialization & Workspace Setup** | **Completed** |
-| **Phase 2** | **Dataset Acquisition & Verification (HospitalOPD)** | **Completed** |
-| **Phase 3** | **Data Profiling & Structural Inspection** | **Completed** |
-| **Phase 4** | **Data Quality Auditing & Cleaning (SQL)** | **Completed** |
-| **Phase 5** | **In-Depth SQL Analysis & Operational KPI Modeling** | **Completed** |
-| **Phase 6** | **Excel Data Preparation & Power Query Integration** | **Completed** |
-| **Phase 7** | **Interactive Excel 365 Executive Dashboard Build** | **Completed** |
-| **Phase 8** | **Business Recommendations & Operational Strategy** | **Completed** |
-| **Phase 9** | **Quality Assurance & Cross-Tool Validation** | **Completed** |
-| **Phase 10** | **Portfolio Packaging & GitHub Presentation** | **Ready for Remote Push** |
+1. **Review the Executive Findings:** Read the [`SQL_ANALYSIS_REPORT.md`](docs/SQL_ANALYSIS_REPORT.md) and [`BUSINESS_RECOMMENDATIONS.md`](docs/BUSINESS_RECOMMENDATIONS.md) for full operational context.
+2. **Open the Dashboard:** Download and open [`excel/PULSE_Executive_Dashboard.xlsx`](excel/PULSE_Executive_Dashboard.xlsx) in Microsoft Excel 365 to interact with the slicers and visuals.
+3. **Inspect the SQL Pipeline:** Review [`sql/`](sql/) to see the modular data cleaning, aggregation, and automated reconciliation scripts.
 
 ---
 
-## 🚀 Strategic Recommendations & Operational Impact Summary
-
-Based on quantitative findings across 49,912 outpatient encounters, the strategic transformation plan ([`docs/BUSINESS_RECOMMENDATIONS.md`](file:///C:/Users/DELL/PULSE/docs/BUSINESS_RECOMMENDATIONS.md)) delivers four core pillars:
-
-1. **Dynamic Shift Scheduling:** Three-tier staggered shifts (05:30, 08:30, 11:30 AM) to match twin-peak arrival surges (06:00 AM & 13:00 PM), with 125% staffing on Mondays and 60% on Sundays.
-2. **Pre-Dawn Queue Elimination:** Automated SMS/WhatsApp appointment token allocation with dynamic 30-minute arrival windows, eliminating the 03:00–05:00 AM holding queue (3,179 patients; 53 min median wait).
-3. **Physician Workload Balancing:** Staggered clinic start times for the top 21 doctors (handling 71.7% of visits) and clinical scribe support to reduce EHR documentation bottlenecks.
-4. **Dedicated Maternal Ultrasound Suite & Rapid Lab Track:** Dedicated scanning suites for FWB and pelvic ultrasounds (66.4% of all imaging) and point-of-care CBC phlebotomy to compress lab TAT from 73 min to $\le 45$ min.
-
-### Targeted Operational Outcomes:
-- **Median Wait Time:** Compressed from **27.0 min to $\le 18.0$ min** (-33.3%).
-- **Severe Delay Rate ($>60$ min):** Reduced from **22.4% to $< 10.0\%$** (-55.3%).
-- **Hospital Capacity:** **+14.3% outpatient throughput gain** (~7,000 additional encounters over 2 years) with zero added physician salary overhead.
+### Author
+**Muhilarasan T**  
+*Data Analyst | Healthcare Analytics & Operations Intelligence*  
+[GitHub Profile](https://github.com/Muhilarasan-T)
